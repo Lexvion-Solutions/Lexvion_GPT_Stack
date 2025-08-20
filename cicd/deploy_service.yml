@@ -1,0 +1,22 @@
+name: Deploy Service
+on:
+  workflow_dispatch:
+jobs:
+  deploy_service:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Build Service
+        run: |
+          cd service
+          npm ci
+          npm run build
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          npx railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+          npx railway up --yes

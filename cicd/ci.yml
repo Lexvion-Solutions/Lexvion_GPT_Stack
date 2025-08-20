@@ -1,0 +1,24 @@
+name: CI
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install & Build Web
+        run: |
+          cd web
+          npm ci
+          npm run build
+          npm test
+      - name: Install & Test Service
+        run: |
+          cd service
+          npm ci
+          npm run build
+          npm test

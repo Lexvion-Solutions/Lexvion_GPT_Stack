@@ -1,0 +1,19 @@
+name: Deploy Web
+on:
+  workflow_dispatch:
+jobs:
+  deploy_web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Build Web
+        run: |
+          cd web
+          npm ci
+          npm run build
+      - name: Deploy to Vercel
+        run: |
+          npx vercel deploy --prod --confirm --token ${{ secrets.VERCEL_TOKEN }}

@@ -1,0 +1,108 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Lexvion Vector API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "${SUPABASE_URL}/rest/v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "apiKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "apikey"
+      }
+    },
+    "schemas": {
+      "UpsertEmbeddingRequest": {
+        "type": "object",
+        "properties": {
+          "project_id": { "type": "string", "format": "uuid" },
+          "ns": { "type": "string" },
+          "id": { "type": "string" },
+          "content": { "type": "string" },
+          "embedding": {
+            "type": "array",
+            "items": { "type": "number" },
+            "description": "High‑dimensional embedding vector (length 1536)"
+          },
+          "meta": { "type": "object" }
+        },
+        "required": ["project_id", "ns", "id", "content", "embedding"]
+      },
+      "SearchEmbeddingRequest": {
+        "type": "object",
+        "properties": {
+          "project_id": { "type": "string", "format": "uuid" },
+          "ns": { "type": "string" },
+          "query_embedding": {
+            "type": "array",
+            "items": { "type": "number" },
+            "description": "Query embedding vector (length 1536)"
+          },
+          "top_k": { "type": "integer", "default": 5 }
+        },
+        "required": ["project_id", "ns", "query_embedding", "top_k"]
+      }
+    }
+  },
+  "paths": {
+    "/rpc/upsert_embedding": {
+      "post": {
+        "operationId": "upsert_embedding",
+        "security": [ { "apiKeyHeader": [] } ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpsertEmbeddingRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Embedding inserted or updated"
+          }
+        }
+      }
+    },
+    "/rpc/search_embedding": {
+      "post": {
+        "operationId": "search_embedding",
+        "security": [ { "apiKeyHeader": [] } ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SearchEmbeddingRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nearest embeddings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "content": { "type": "string" },
+                      "score": { "type": "number" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

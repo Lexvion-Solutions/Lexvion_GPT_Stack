@@ -1,0 +1,35 @@
+{
+  "files": [
+    {
+      "path": "vector.sql",
+      "language": "sql",
+      "content_md5": "d392e24e78b3e04f3dd57ab0105e2631"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "content_md5": "a25994f36095ad2e7da81e3165824b5d"
+    },
+    {
+      "path": "openapi.lexvion-vector.json",
+      "language": "json",
+      "content_md5": "0e6bf6a86279f0bf71327f94630f28b7"
+    }
+  ],
+  "actions_to_add": [
+    {
+      "name": "lexvion-vector",
+      "spec_path": "openapi.lexvion-vector.json",
+      "headers": {
+        "apikey": "${SUPABASE_SERVICE_ROLE}"
+      }
+    }
+  ],
+  "commands": [
+    "curl -X POST \"${SUPABASE_URL}/rest/v1/rpc/upsert_embedding\" -H \"apikey: ${SUPABASE_SERVICE_ROLE}\" -H \"Content-Type: application/json\" -d \"{...}\"",
+    "curl -X POST \"${SUPABASE_URL}/rest/v1/rpc/search_embedding\" -H \"apikey: ${SUPABASE_SERVICE_ROLE}\" -H \"Content-Type: application/json\" -d \"{...}\""
+  ],
+  "gaps": [
+    "Ensure the vector extension is enabled in Supabase"
+  ]
+}

@@ -1,0 +1,2 @@
+# Upsert embedding command
+curl -X POST ${SUPABASE_URL}/rest/v1/rpc/upsert_embedding \n  -H 'Authorization: Bearer ${SUPABASE_SERVICE_ROLE}' \n  -H 'Content-Type: application/json' \n  -d '{"entity_id":1,"embedding":[0.0,1.0],"metadata":{}}'

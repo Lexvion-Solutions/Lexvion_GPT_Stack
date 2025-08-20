@@ -1,0 +1,9 @@
+[
+  {
+    "name": "upsert_embedding",
+    "spec_path": "vector.openapi.json",
+    "headers": {
+      "Authorization": "Bearer <SUPABASE_SERVICE_ROLE>"
+    }
+  }
+]

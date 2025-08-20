@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "channel": "C1234567",
+  "ts": "1620000000.000100",
+  "message": {
+    "text": "Smoke test completed"
+  }
+}

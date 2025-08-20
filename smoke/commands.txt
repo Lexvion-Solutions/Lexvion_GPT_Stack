@@ -1,0 +1,3 @@
+# Run the smoke test
+chmod +x runner.sh
+./runner.sh
