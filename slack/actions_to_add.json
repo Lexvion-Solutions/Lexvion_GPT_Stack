@@ -1,0 +1,9 @@
+[
+  {
+    "name": "slack_message",
+    "spec_path": "slack.openapi.json",
+    "headers": {
+      "Authorization": "Bearer <SLACK_BOT_TOKEN>"
+    }
+  }
+]

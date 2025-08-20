@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Docs & Pitch",
+  "$id": "urn:gpt:docs-pitch:output:1",
+"type": "object",
+"required": ["artifact_markdown", "summary"],
+"properties": {
+"artifact_markdown": { "type": "string" },
+"summary": { "type": "string" }
+}
+}

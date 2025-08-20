@@ -1,0 +1,6 @@
+Provide a value for 'intent'.
+List the items for 'services'.
+Provide a value for 'trigger'.
+List the items for 'actions'.
+Please specify the value for 'implementation' (code, zapier, make, hybrid).
+List the items for 'secrets_env'.

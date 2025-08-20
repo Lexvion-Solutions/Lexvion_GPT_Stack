@@ -1,0 +1,3 @@
+Provide a value for 'product'.
+List the items for 'competitors'.
+List the items for 'targets'.

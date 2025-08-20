@@ -1,0 +1,3 @@
+Please specify the value for 'audience' (founder, pm, cto, investor).
+Please specify the value for 'artifact' (api_ref, prd, email_pitch, case_study).
+Provide a value for 'context'.

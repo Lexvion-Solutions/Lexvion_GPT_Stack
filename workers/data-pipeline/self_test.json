@@ -1,0 +1,9 @@
+{
+  "source": "csv",
+  "destination": "postgres",
+  "kpis": [
+    "maus",
+    "error_rate",
+    "jobs_processed"
+  ]
+}

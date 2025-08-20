@@ -1,0 +1,14 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-08-19T21:16:38.547495Z",
+    "component": {
+      "type": "application",
+      "name": "lexvion-stack",
+      "version": "1.0.0"
+    }
+  },
+  "components": []
+}

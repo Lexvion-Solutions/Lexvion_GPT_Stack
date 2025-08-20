@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SaaS MVP Builder",
+  "$id": "urn:gpt:saas-mvp-builder:output:1",
+"type": "object",
+"required": ["files", "db_migrations", "readme", "ci"],
+"properties": {
+"files": {
+"type": "array",
+"items": {
+"type": "object",
+"required": ["path", "contents"],
+"properties": {
+"path": { "type": "string" },
+"contents": { "type": "string" }
+}
+}
+},
+"db_migrations": {
+"type": "array",
+"items": { "type": "string" }
+},
+"readme": { "type": "string" },
+"ci": { "type": "string" }
+}
+}

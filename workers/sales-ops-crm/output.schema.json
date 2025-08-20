@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sales Ops & CRM",
+  "$id": "urn:gpt:sales-ops-crm:output:1",
+"type": "object",
+"required": ["sequence", "csv_script", "dashboard", "compliance_notes"],
+"properties": {
+"sequence": { "type": "array", "items": { "type": "string" } },
+"csv_script": { "type": "string" },
+"dashboard": { "type": "string" },
+"compliance_notes": { "type": "string" }
+}
+}

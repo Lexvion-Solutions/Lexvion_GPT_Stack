@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Evaluation",
+  "$id": "urn:gpt:agent-evaluation:input:1",
+"type": "object",
+"required": ["tasks", "providers", "metrics"],
+"properties": {
+"tasks": { "type": "array", "items": { "type": "string" } },
+"providers": { "type": "array", "items": { "enum": ["openai", "anthropic",
+"mistral"] } },
+"metrics": { "type": "array", "items": { "enum": ["accuracy", "cost",
+"latency", "pass_at_k"] } },
+"budget_usd": { "type": "number", "default": 5.0 }
+}
+}

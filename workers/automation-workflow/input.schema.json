@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Automation Workflow",
+  "$id": "urn:gpt:automation-workflow:input:1",
+"type": "object",
+"required": ["intent", "services", "trigger", "actions", "implementation"],
+"properties": {
+"intent": { "type": "string" },
+"services": { "type": "array", "items": { "type": "string" } },
+"trigger": { "type": "string" },
+"actions": { "type": "array", "items": { "type": "string" } },
+"implementation": { "enum": ["code", "zapier", "make", "hybrid"] },
+"secrets_env": { "type": "array", "items": { "type": "string" } }
+}
+}

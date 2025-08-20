@@ -1,0 +1,17 @@
+{
+  "intent": "Notify Slack when new lead added",
+  "services": [
+    "slack",
+    "gdrive"
+  ],
+  "trigger": "new_row_in_gsheet",
+  "actions": [
+    "format_message",
+    "post_to_slack"
+  ],
+  "implementation": "code",
+  "secrets_env": [
+    "SLACK_BOT_TOKEN",
+    "GSHEETS_SERVICE_JSON"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SaaS MVP Builder",
+  "$id": "urn:gpt:saas-mvp-builder:input:1",
+"type": "object",
+"required": ["framework", "auth", "billing", "db"],
+"properties": {
+"framework": { "enum": ["nextjs", "fastapi"] },
+"auth": { "enum": ["clerk", "supabase", "custom"] },
+"billing": { "enum": ["stripe", "none"] },
+"db": { "enum": ["postgres", "sqlite"] },
+"features": { "type": "array", "items": { "type": "string" } }
+}
+}

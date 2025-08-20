@@ -1,0 +1,10 @@
+{
+  "system_name": "Lucidic Eval Harness",
+  "data_classes": [
+    "basic",
+    "pii"
+  ],
+  "regimes": [
+    "soc2"
+  ]
+}

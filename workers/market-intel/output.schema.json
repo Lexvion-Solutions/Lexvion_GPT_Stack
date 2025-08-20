@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Market Intel",
+  "$id": "urn:gpt:market-intel:output:1",
+"type": "object",
+"required": ["matrix", "positioning", "bets"],
+"properties": {
+"matrix": { "type": "string" },
+"positioning": { "type": "string" },
+"bets": { "type": "array", "items": { "type": "string" } }
+}
+}

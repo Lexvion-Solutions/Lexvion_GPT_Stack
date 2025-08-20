@@ -1,0 +1,10 @@
+{
+  "input": {
+    "task_id": "example",
+    "payload": {}
+  },
+  "expected_output": {
+    "status": "completed",
+    "result": {}
+  }
+}

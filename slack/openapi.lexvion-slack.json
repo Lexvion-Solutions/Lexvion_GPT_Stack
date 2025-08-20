@@ -1,0 +1,67 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Lexvion Slack API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://slack.com/api"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "ChatPostMessageRequest": {
+        "type": "object",
+        "properties": {
+          "channel": { "type": "string" },
+          "text": { "type": "string" },
+          "blocks": { "type": "array", "items": { "type": "object" }, "nullable": true }
+        },
+        "required": ["channel", "text"]
+      },
+      "ChatPostMessageResponse": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean" },
+          "ts": { "type": "string" },
+          "channel": { "type": "string" },
+          "message": { "type": "object" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/chat.postMessage": {
+      "post": {
+        "summary": "Post a message to a Slack channel",
+        "operationId": "chat_postMessage",
+        "security": [ { "bearerAuth": [] } ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChatPostMessageRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChatPostMessageResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

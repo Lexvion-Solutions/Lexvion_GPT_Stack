@@ -1,0 +1,6 @@
+Please specify the value for 'language' (typescript, python).
+Provide a value for 'package_name'.
+Please specify the value for 'auth' (api_key_header, oauth2_client, oauth2_device, none).
+Please specify the value for 'pagination' (cursor, page, token, none).
+Provide the object for 'env' with its fields.
+Please specify the value for 'api_spec_type' (openapi, graphql, examples).

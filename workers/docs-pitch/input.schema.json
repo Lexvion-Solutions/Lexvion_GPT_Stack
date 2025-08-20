@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Docs & Pitch",
+  "$id": "urn:gpt:docs-pitch:input:1",
+"type": "object",
+"required": ["audience", "artifact", "context"],
+"properties": {
+"audience": { "enum": ["founder", "pm", "cto", "investor"] },
+"artifact": { "enum": ["api_ref", "prd", "email_pitch", "case_study"] },
+"context": { "type": "string" }
+}
+}

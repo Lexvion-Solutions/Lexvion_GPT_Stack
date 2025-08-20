@@ -1,0 +1,4 @@
+List the items for 'tasks'.
+List the items for 'providers'.
+List the items for 'metrics'.
+Provide a value for 'budget_usd'.

@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    "refund-policy-qa",
+    "tool-use-routing"
+  ],
+  "providers": [
+    "openai",
+    "anthropic"
+  ],
+  "metrics": [
+    "accuracy",
+    "cost",
+    "latency"
+  ],
+  "budget_usd": 6
+}

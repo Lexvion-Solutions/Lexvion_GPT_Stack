@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Data Pipeline",
+  "$id": "urn:gpt:data-pipeline:input:1",
+"type": "object",
+"required": ["source", "destination", "kpis"],
+"properties": {
+"source": { "enum": ["csv", "s3", "gdrive", "webhook"] },
+"destination": { "enum": ["postgres", "bigquery", "duckdb"] },
+"kpis": { "type": "array", "items": { "type": "string" } }
+}
+}

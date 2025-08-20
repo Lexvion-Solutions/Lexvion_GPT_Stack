@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Data Pipeline",
+  "$id": "urn:gpt:data-pipeline:output:1",
+"type": "object",
+"required": ["schemas", "ingestion", "models", "dq_checklist"],
+"properties": {
+"schemas": { "type": "array", "items": { "type": "string" } },
+"ingestion": { "type": "string" },
+"models": { "type": "array", "items": { "type": "string" } },
+"dq_checklist": { "type": "string" }
+}
+}

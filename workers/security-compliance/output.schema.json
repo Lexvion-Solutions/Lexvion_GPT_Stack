@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Security & Compliance",
+  "$id": "urn:gpt:security-compliance:output:1",
+"type": "object",
+"required": ["rbac", "audit_log_schema", "rate_limit_policy", "threat_model",
+"privacy_checklist"],
+"properties": {
+"rbac": { "type": "string" },
+"audit_log_schema": { "type": "string" },
+"rate_limit_policy": { "type": "string" },
+"threat_model": { "type": "string" },
+"privacy_checklist": { "type": "string" }
+}
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UI/UX Drafting",
+  "$id": "urn:gpt:ui-ux-drafting:input:1",
+"type": "object",
+"required": ["flow_name", "screens"],
+"properties": {
+"flow_name": { "type": "string" },
+"screens": { "type": "array", "items": { "type": "string" } },
+"design_tokens": { "type": "object" }
+}
+}

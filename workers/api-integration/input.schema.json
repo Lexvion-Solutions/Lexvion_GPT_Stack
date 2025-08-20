@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "API Integration",
+  "$id": "urn:gpt:api-integration:input:1",
+"type": "object",
+"required": ["language", "package_name", "auth", "pagination", "env",
+"api_spec_type"],
+"properties": {
+"language": {
+"enum": ["typescript", "python"]
+},
+"package_name": {
+"type": "string"
+},
+"auth": {
+"enum": ["api_key_header", "oauth2_client", "oauth2_device", "none"]
+},
+"pagination": {
+"enum": ["cursor", "page", "token", "none"]
+},
+"env": {
+"type": "object",
+"properties": {
+"BASE_URL": { "type": "string" },
+"API_KEY_NAME": { "type": "string" },
+"OAUTH_SCOPES": {
+"type": "array",
+"items": { "type": "string" }
+}
+}
+},
+"api_spec_type": {
+"enum": ["openapi", "graphql", "examples"]
+},
+"timeouts_ms": {
+"type": "integer",
+"default": 30000
+},
+"retries": {
+"type": "integer",
+"default": 3
+}
+}
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Security & Compliance",
+  "$id": "urn:gpt:security-compliance:input:1",
+"type": "object",
+"required": ["system_name", "data_classes", "regimes"],
+"properties": {
+"system_name": { "type": "string" },
+"data_classes": { "type": "array", "items": { "enum": ["none", "basic",
+"pii", "phi", "financial"] } },
+"regimes": { "type": "array", "items": { "enum": ["soc2", "gdpr", "hipaa",
+"none"] } }
+}
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UI/UX Drafting",
+  "$id": "urn:gpt:ui-ux-drafting:output:1",
+"type": "object",
+"required": ["wireframes", "components", "copy"],
+"properties": {
+"wireframes": { "type": "string" },
+"components": {
+"type": "array",
+"items": {
+"type": "object",
+"required": ["path", "contents"],
+"properties": {
+"path": { "type": "string" },
+"contents": { "type": "string" }
+}
+}
+},
+"copy": { "type": "string" }
+}
+}

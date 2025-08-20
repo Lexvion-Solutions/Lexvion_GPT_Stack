@@ -1,0 +1,8 @@
+{
+  "flow_name": "Vendor outreach",
+  "screens": [
+    "List",
+    "Compose",
+    "Sent"
+  ]
+}

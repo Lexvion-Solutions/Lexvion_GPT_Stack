@@ -1,0 +1,11 @@
+{
+  "icp": "SMB operations leaders",
+  "crm": "hubspot",
+  "fields": [
+    "first_name",
+    "last_name",
+    "email",
+    "company",
+    "title"
+  ]
+}

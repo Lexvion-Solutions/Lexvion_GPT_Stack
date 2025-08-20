@@ -1,0 +1,14 @@
+{
+  "language": "typescript",
+  "package_name": "@lexvion/nowadays",
+  "auth": "api_key_header",
+  "pagination": "cursor",
+  "env": {
+    "BASE_URL": "https://api.nowadays.ai",
+    "API_KEY_NAME": "NOWADAYS_API_KEY",
+    "OAUTH_SCOPES": []
+  },
+  "api_spec_type": "openapi",
+  "timeouts_ms": 30000,
+  "retries": 3
+}

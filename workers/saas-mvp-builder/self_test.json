@@ -1,0 +1,11 @@
+{
+  "framework": "nextjs",
+  "auth": "clerk",
+  "billing": "stripe",
+  "db": "postgres",
+  "features": [
+    "teams",
+    "rbac",
+    "webhooks"
+  ]
+}

@@ -1,0 +1,2 @@
+# Send Slack message
+curl -X POST https://slack.com/api/chat.postMessage \n  -H 'Authorization: Bearer ${SLACK_BOT_TOKEN}' \n  -H 'Content-Type: application/json' \n  -d '{"channel":"#approvals","text":"Approval required for step"}'

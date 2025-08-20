@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Evaluation",
+  "$id": "urn:gpt:agent-evaluation:output:1",
+"type": "object",
+"required": ["runner", "dataset", "results_schema", "dashboard_spec",
+"tests"],
+"properties": {
+"runner": {
+"type": "object",
+"properties": {
+"path": { "type": "string" },
+"contents": { "type": "string" }
+},
+"required": ["path", "contents"]
+},
+"dataset": { "type": "string" },
+"results_schema": { "type": "string" },
+"dashboard_spec": { "type": "string" },
+"tests": { "type": "array", "items": { "type": "string" } }
+}
+}

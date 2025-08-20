@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sales Ops & CRM",
+  "$id": "urn:gpt:sales-ops-crm:input:1",
+"type": "object",
+"required": ["icp", "crm", "fields"],
+"properties": {
+"icp": { "type": "string" },
+"crm": { "enum": ["hubspot", "salesforce", "pipedrive", "notion"] },
+"fields": { "type": "array", "items": { "type": "string" } }
+}
+}

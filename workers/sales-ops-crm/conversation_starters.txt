@@ -1,0 +1,3 @@
+Provide a value for 'icp'.
+Please specify the value for 'crm' (hubspot, salesforce, pipedrive, notion).
+List the items for 'fields'.

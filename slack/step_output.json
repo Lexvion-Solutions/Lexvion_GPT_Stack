@@ -1,0 +1,29 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "content_md5": "442c1745276eb01712e064fb540251af"
+    },
+    {
+      "path": "openapi.lexvion-slack.json",
+      "language": "json",
+      "content_md5": "ae06ed56c3f86de1e785c3147b15d0ce"
+    }
+  ],
+  "actions_to_add": [
+    {
+      "name": "lexvion-slack",
+      "spec_path": "openapi.lexvion-slack.json",
+      "headers": {
+        "Authorization": "Bearer ${SLACK_BOT_TOKEN}"
+      }
+    }
+  ],
+  "commands": [
+    "curl -X POST \"https://slack.com/api/chat.postMessage\" -H \"Authorization: Bearer ${SLACK_BOT_TOKEN}\" -H \"Content-Type: application/json\" -d \"{...}\""
+  ],
+  "gaps": [
+    "Always insert an approval gate before sending Slack messages"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "API Integration",
+  "$id": "urn:gpt:api-integration:output:1",
+"type": "object",
+"required": ["sdk_files", "examples", "tests", "security_notes"],
+"properties": {
+"sdk_files": {
+"type": "array",
+"items": {
+"type": "object",
+"properties": {
+"path": { "type": "string" },
+"contents": { "type": "string" }
+},
+"required": ["path", "contents"]
+}
+},
+"examples": {
+"type": "array",
+"items": {
+"type": "object",
+"properties": {
+"purpose": { "type": "string" },
+"code": { "type": "string" }
+},
+"required": ["purpose", "code"]
+}
+},
+"tests": {
+"type": "array",
+"items": {
+"type": "object",
+"properties": {
+"path": { "type": "string" },
+"contents": { "type": "string" }
+},
+"required": ["path", "contents"]
+}
+},
+"security_notes": {
+"type": "string"
+}
+}
+}

@@ -1,0 +1,5 @@
+Please specify the value for 'framework' (nextjs, fastapi).
+Please specify the value for 'auth' (clerk, supabase, custom).
+Please specify the value for 'billing' (stripe, none).
+Please specify the value for 'db' (postgres, sqlite).
+List the items for 'features'.
