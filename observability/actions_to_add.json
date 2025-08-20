@@ -1,0 +1,9 @@
+[
+  {
+    "name": "trace_event",
+    "spec_path": "tracehub.openapi.json",
+    "headers": {
+      "Authorization": "Bearer <TRACEHUB_API_KEY>"
+    }
+  }
+]

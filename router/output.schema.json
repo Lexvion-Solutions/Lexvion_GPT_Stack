@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Router Output",
+  "type": "object",
+  "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "completed",
+        "failed"
+      ]
+    },
+    "worker_id": {
+      "type": "string"
+    },
+    "result": {
+      "type": "object"
+    },
+    "steps": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "risk": {
+            "type": "string"
+          },
+          "idempotency_key": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "risk",
+          "idempotency_key",
+          "revision"
+        ]
+      }
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.1"
+    }
+  },
+  "required": [
+    "request_id",
+    "status"
+  ],
+  "schema_version": "1.1"
+}

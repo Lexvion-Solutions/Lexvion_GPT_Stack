@@ -1,0 +1,29 @@
+{
+  "router": {
+    "max_size_bytes": 10240
+  },
+  "workers": {
+    "max_size_bytes": 512000
+  },
+  "docs": {
+    "max_size_bytes": 102400
+  },
+  "supabase": {
+    "max_size_bytes": 51200
+  },
+  "vector": {
+    "max_size_bytes": 102400
+  },
+  "observability": {
+    "max_size_bytes": 102400
+  },
+  "slack": {
+    "max_size_bytes": 102400
+  },
+  "cicd": {
+    "max_size_bytes": 102400
+  },
+  "smoke": {
+    "max_size_bytes": 102400
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "files": [
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "content_md5": "d25c152e2c862b85d4be82d1d3a4e2d2"
+    },
+    {
+      "path": "openapi.lexvion-tracehub.json",
+      "language": "json",
+      "content_md5": "d10f7c90522cc017ea315896a4843545"
+    },
+    {
+      "path": "tracehub/server.js",
+      "language": "javascript",
+      "content_md5": "7fa72a26173b452e7f43b4d40403f76c"
+    }
+  ],
+  "actions_to_add": [
+    {
+      "name": "lexvion-tracehub",
+      "spec_path": "openapi.lexvion-tracehub.json",
+      "headers": {
+        "apikey": "${TRACEHUB_API_KEY}"
+      }
+    }
+  ],
+  "commands": [
+    "curl -X POST \"${TRACEHUB_URL}/traces\" -H \"apikey: ${TRACEHUB_API_KEY}\" -H \"Content-Type: application/json\" -d \"{...}\"",
+    "curl -X GET \"${TRACEHUB_URL}/metrics\" -H \"apikey: ${TRACEHUB_API_KEY}\""
+  ],
+  "gaps": [
+    "TraceHub server uses in-memory storage; add persistence for production"
+  ]
+}

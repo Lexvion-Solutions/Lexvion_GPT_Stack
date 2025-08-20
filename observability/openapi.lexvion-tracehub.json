@@ -1,0 +1,92 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Lexvion TraceHub",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "${TRACEHUB_URL}"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "apiKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "apikey"
+      }
+    },
+    "schemas": {
+      "Trace": {
+        "type": "object",
+        "properties": {
+          "project_id": { "type": "string", "format": "uuid" },
+          "step_id": { "type": "string" },
+          "model": { "type": "string" },
+          "tokens_in": { "type": "integer" },
+          "tokens_out": { "type": "integer" },
+          "latency_ms": { "type": "integer" }
+        },
+        "required": ["project_id", "step_id", "model"]
+      },
+      "Metrics": {
+        "type": "object",
+        "properties": {
+          "total_traces": { "type": "integer" },
+          "model_breakdown": {
+            "type": "object",
+            "additionalProperties": { "type": "integer" }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/traces": {
+      "post": {
+        "summary": "Log a trace event",
+        "security": [ { "apiKeyHeader": [] } ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Trace" }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Trace accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics": {
+      "get": {
+        "summary": "Retrieve aggregated metrics",
+        "security": [ { "apiKeyHeader": [] } ],
+        "responses": {
+          "200": {
+            "description": "Metrics summary",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Metrics" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

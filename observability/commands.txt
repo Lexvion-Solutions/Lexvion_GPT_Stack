@@ -1,0 +1,2 @@
+# Send a trace event
+curl -X POST ${TRACEHUB_URL}/traces \n  -H 'Authorization: Bearer ${TRACEHUB_API_KEY}' \n  -H 'Content-Type: application/json' \n  -d '{"timestamp":"$(date -Iseconds)","service":"router","level":"info","message":"Step executed"}'
