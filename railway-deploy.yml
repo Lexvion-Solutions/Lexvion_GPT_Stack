@@ -1,0 +1,19 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger Railway Deploy
+        run: |
+          curl -sSf -X POST \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"projectId":"${{ secrets.RAILWAY_PROJECT_ID }}","serviceId":"${{ secrets.RAILWAY_SERVICE_ID }}"}' \
+            https://backboard.railway.app/graphql \
+            -o /dev/null
