@@ -79,3 +79,5 @@ check endpoints:
 
 These endpoints perform no external API calls; they solely verify the
 presence of the associated environment variables.
+
+Test branch protection
