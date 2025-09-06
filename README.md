@@ -1,13 +1,34 @@
-````markdown
-# Lexvion GPT Stack  
-**Secure AI backend + Slack ops, deployable in minutes**
+<h1 align="center">Lexvion GPT Stack</h1>
+<p align="center"><b>Secure AI backend + Slack ops, deployable in minutes</b></p>
+<p align="center">Node.js 20 • Pure ESM • Slack entry points • Hardened REST • OpenAPI for GPT Actions • Deploys to <b>Vercel</b> and <b>Railway</b></p>
 
-Production-ready Node.js 20 **pure ESM** service with Slack entry points, hardened REST APIs, OpenAPI for GPT Actions, and turnkey deploys to **Vercel** and **Railway**.  
+<p align="center">
+  <a href="https://github.com/Lexvion-Solutions/Lexvion_GPT_Stack/actions">
+    <img alt="CI" src="https://img.shields.io/github/actions/workflow/status/Lexvion-Solutions/Lexvion_GPT_Stack/quality-gate.yml?label=CI">
+  </a>
+  <a href="https://lexvion-gpt-stack.vercel.app/api/health">
+    <img alt="Vercel" src="https://img.shields.io/website?url=https%3A%2F%2Flexvion-gpt-stack.vercel.app%2Fapi%2Fhealth&label=Vercel%20prod">
+  </a>
+  <a href="https://lexviongptstack-production.up.railway.app/api/health">
+    <img alt="Railway" src="https://img.shields.io/website?url=https%3A%2F%2Flexviongptstack-production.up.railway.app%2Fapi%2Fhealth&label=Railway%20prod">
+  </a>
+</p>
+
+<p align="center">
+  <a href="#live-surfaces">Live</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#quick-start-local">Quick Start</a> ·
+  <a href="#deployment">Deploy</a> ·
+  <a href="#slack-app-configuration">Slack</a> ·
+  <a href="#routes">Routes</a> ·
+  <a href="#security--reliability">Security</a> ·
+  <a href="#cicd">CI/CD</a> ·
+  <a href="#troubleshooting">Troubleshoot</a>
+</p>
 
 ---
 
 ## Table of Contents
-- [Status](#status)
 - [Live Surfaces](#live-surfaces)
 - [Features](#features)
 - [Quick Start (Local)](#quick-start-local)
@@ -18,6 +39,7 @@ Production-ready Node.js 20 **pure ESM** service with Slack entry points, harden
   - [Railway](#railway)
 - [Slack App Configuration](#slack-app-configuration)
 - [Routes](#routes)
+- [Environment Variables](#environment-variables)
 - [Security & Reliability](#security--reliability)
 - [Observability](#observability)
 - [CI/CD](#cicd)
@@ -27,38 +49,28 @@ Production-ready Node.js 20 **pure ESM** service with Slack entry points, harden
 
 ---
 
-## Status
-[![CI](https://img.shields.io/github/actions/workflow/status/Lexvion-Solutions/Lexvion_GPT_Stack/quality-gate.yml?label=CI)](https://github.com/Lexvion-Solutions/Lexvion_GPT_Stack/actions)  
-[![Vercel](https://img.shields.io/website?url=https%3A%2F%2Flexvion-gpt-stack.vercel.app%2Fapi%2Fhealth&label=Vercel%20prod)](https://lexvion-gpt-stack.vercel.app/api/health)  
-[![Railway](https://img.shields.io/website?url=https%3A%2F%2Flexviongptstack-production.up.railway.app%2Fapi%2Fhealth&label=Railway%20prod)](https://lexviongptstack-production.up.railway.app/api/health)  
-
----
-
 ## Live Surfaces
-- **Health:** [Vercel](https://lexvion-gpt-stack.vercel.app/api/health) · [Railway](https://lexviongptstack-production.up.railway.app/api/health)  
-- **OpenAPI (for GPT Actions):** [`/api/openapi.json`](https://lexvion-gpt-stack.vercel.app/api/openapi.json)  
-- **Demo runbook:** [`DEMO.md`](./DEMO.md)  
-- **Security baseline:** [`HARDENING.md`](./HARDENING.md)  
+- **Health:** <a href="https://lexvion-gpt-stack.vercel.app/api/health">Vercel</a> · <a href="https://lexviongptstack-production.up.railway.app/api/health">Railway</a>  
+- **OpenAPI (for GPT Actions):** <a href="https://lexvion-gpt-stack.vercel.app/api/openapi.json"><code>/api/openapi.json</code></a>  
+- **Demo runbook:** <a href="./DEMO.md">DEMO.md</a> · **Security baseline:** <a href="./HARDENING.md">HARDENING.md</a>
 
 ---
 
 ## Features
-- Slack integration (**Slash commands, Events, Interactivity**) with:
-  - HMAC verification
-  - ±300s replay protection
-- Provider checks:  
-  `GET /api/check/{supabase|notion|airtable|sendgrid|sentry|slack|gsheets}` → `{"configured":true}` if env vars exist
-- Rate limiting:
+- 🔌 **Slack**: Slash commands, Events, Interactivity
+  - HMAC verification and ±300s replay protection
+- ✅ **Provider checks**:
+  - `GET /api/check/{supabase|notion|airtable|sendgrid|sentry|slack|gsheets}` → `{"configured":true}` when env names exist
+- ⏱️ **Rate limits**:
   - `/api/slack/*` → 120 req/min/IP
-  - other `/api/*` → 100 req/min/IP  
-  (`app.set("trust proxy", 1)`)
-- Observability:
-  - **Sentry DSN** configured
-  - Alert **“Prod error spike”** → Slack + email
-- CI/CD:
+  - other `/api/*` → 100 req/min/IP
+  - `app.set("trust proxy", 1)`
+- 🔭 **Observability**:
+  - Sentry DSN configured · Alert “Prod error spike” → Slack + email
+- 🔁 **CI/CD**:
   - PR quality gate (lint, tests, smoke, OpenAPI)
   - Auto-deploy to Vercel & Railway
-  - Protected `main` branch (PRs, checks, reviewers)  
+  - Protected `main` with required checks
 
 ---
 
@@ -67,134 +79,130 @@ Production-ready Node.js 20 **pure ESM** service with Slack entry points, harden
 cp .env.template .env   # set env values locally
 npm install
 npm start               # defaults to PORT=3000
-````
-
 Health check:
 
-```bash
+bash
+Copy code
 curl -s http://localhost:3000/api/health  # => {"ok":true}
-```
+Slack One-Liner Test
+In Slack channel #demo:
 
----
-
-## Slack One-Liner Test
-
-In Slack channel `#demo`:
-
-```
+bash
+Copy code
 /lex Hello Lexvion
-```
-
 Expected:
 
-```
+bash
+Copy code
 Hi @<your Slack username>, you ran /lex with: Hello Lexvion
-```
-
----
-
-## Project Structure
-
-```
+Project Structure
+bash
+Copy code
 index.js        # Entrypoint
 routes.js       # HTTP + Slack routes
 services/       # Provider integrations
 Dockerfile      # Production image
 package.json    # "start": "npm start"
-```
+Deployment
+<details> <summary><b>Vercel</b></summary>
+Create a Vercel project from this repo.
 
----
+Set environment variables:
 
-## Deployment
+Copy code
+PORT, SUPABASE_URL, SUPABASE_ANON_KEY, SENTRY_DSN,
+SLACK_SIGNING_SECRET, SLACK_BOT_TOKEN, NOTION_TOKEN,
+AIRTABLE_API_KEY, AIRTABLE_BASE_ID, SENDGRID_API_KEY,
+GSHEETS_CLIENT_EMAIL, GSHEETS_PRIVATE_KEY
+GSHEETS_PRIVATE_KEY must include real newlines.
 
-### Vercel
+Deploy → Health: https://<app>.vercel.app/api/health
 
-1. Create a Vercel project from this repo.
-2. Set environment variables:
+</details> <details> <summary><b>Railway</b></summary>
+Create a Railway service from this repo.
 
-   ```
-   PORT, SUPABASE_URL, SUPABASE_ANON_KEY, SENTRY_DSN,
-   SLACK_SIGNING_SECRET, SLACK_BOT_TOKEN, NOTION_TOKEN,
-   AIRTABLE_API_KEY, AIRTABLE_BASE_ID, SENDGRID_API_KEY,
-   GSHEETS_CLIENT_EMAIL, GSHEETS_PRIVATE_KEY
-   ```
+Set the same environment variables as above.
 
-   * `GSHEETS_PRIVATE_KEY` must include real newlines.
-3. Deploy → Health check: `https://<app>.vercel.app/api/health`
+Deploy → Health: https://<app>.up.railway.app/api/health
 
-### Railway
+</details>
+Slack App Configuration
+Surface	Method	URL	Notes
+Slash /lex	POST	https://<host>/api/slack/command	URL-encoded
+Events	POST	https://<host>/api/slack/events	HMAC + url_verification
+Interactivity	POST	https://<host>/api/slack/interactive	HMAC; URL-encoded payload
 
-1. Create a Railway service from this repo.
-2. Set the same environment variables as above.
-3. Deploy → Health check: `https://<app>.up.railway.app/api/health`
+Requirements:
 
----
+HMAC signature window ±300s
 
-## Slack App Configuration
+Invite the app to the target channel
 
-* Slash `/lex` → `POST https://<host>/api/slack/command`
-* Events → `POST https://<host>/api/slack/events`
-* Interactivity → `POST https://<host>/api/slack/interactive`
-* Requirements:
+Routes
+Method	Path	Description
+GET	/api/health	{"ok":true}
+GET	`/api/check/{supabase	notion
+GET	/api/openapi.json	OpenAPI spec (for GPT Actions)
+POST	/api/slack/command	Echoes sanitized input; length-clamped
+POST	/api/slack/events	Verifies HMAC; Slack URL verification
+POST	/api/slack/interactive	Verifies HMAC
 
-  * HMAC verification
-  * ±300s signature window
-  * Invite app to target channel
+Environment Variables
+Name	Purpose
+PORT	HTTP port (Vercel/Railway can override)
+SUPABASE_URL, SUPABASE_ANON_KEY	Supabase integration
+SENTRY_DSN	Sentry project DSN
+SLACK_SIGNING_SECRET, SLACK_BOT_TOKEN	Slack auth + HMAC
+NOTION_TOKEN	Notion API token
+AIRTABLE_API_KEY, AIRTABLE_BASE_ID	Airtable integration
+SENDGRID_API_KEY	SendGrid integration
+GSHEETS_CLIENT_EMAIL, GSHEETS_PRIVATE_KEY	Google Sheets service account (PRIVATE_KEY uses real newlines)
 
----
+Security & Reliability
+Rate limiting
 
-## Routes
+/api/slack/* → 120 rpm/IP
 
-* `GET /api/health` → `{"ok":true}`
-* `GET /api/check/{provider}` → `{"configured":true}`
-* `GET /api/openapi.json` → OpenAPI spec
-* `POST /api/slack/command` → echoes sanitized input
-* `POST /api/slack/events` → verifies HMAC + URL verification
-* `POST /api/slack/interactive` → verifies HMAC
+Other /api/* → 100 rpm/IP
 
----
+Headers: Security headers enabled
 
-## Security & Reliability
+Logging: Request logging with secret redaction
 
-* Rate limiting: Slack 120 rpm/IP · other APIs 100 rpm/IP
-* Security headers enabled
-* Request logging with secret redaction
-* `app.set("trust proxy", 1)` for Vercel/Railway IPs
+Proxy: app.set("trust proxy", 1) for accurate IPs on Vercel/Railway
 
----
+Observability
+Sentry DSN configured
 
-## Observability
+Alert “Prod error spike”
 
-* **Sentry DSN** configured
-* Alert **“Prod error spike”**:
+Triggers on new issue or >50 events in 5 minutes
 
-  * Triggers on new issue or >50 events in 5 min
-  * Notifies Slack + email
+Notifies Slack and email
 
----
+CI/CD
+PR quality gate: lint, tests, smoke, OpenAPI
 
-## CI/CD
+Auto-deploy to Vercel & Railway
 
-* `.github/workflows/quality-gate.yml` → lint, tests, smoke, OpenAPI on PR
-* `.github/workflows/vercel-deploy.yml` → deploy `main` → Vercel
-* `.github/workflows/railway-deploy.yml` → deploy `main` → Railway
-* Branch protection on `main`: PR required, status checks required, no force pushes, ≥1 reviewer
-* Required checks: CI, CodeQL, Vercel, Railway
+Branch protection on main
 
----
+PR required, up-to-date required
 
-## Troubleshooting
+Required checks: CI, CodeQL, Vercel, Railway
 
-* Provider check returns `false` → fix env var name
-* Slack not responding → verify `SLACK_SIGNING_SECRET` + request URLs
-* Missing Sentry alerts → ensure DSN + prod environment
-* GSheets key issues → ensure newlines preserved
+Block force pushes/deletions, ≥1 reviewer
 
----
+Troubleshooting
+Symptom	Action
+Provider check returns false	Fix the env var name for that provider
+Slack not responding	Verify SLACK_SIGNING_SECRET and Request URLs
+Sentry alert missing	Ensure DSN set and environment is production
+GSHEETS_PRIVATE_KEY errors	Store with real newlines
 
-## Demo cURL Cheatsheet (Prod)
-
-```bash
+Demo cURL Cheatsheet (Prod)
+bash
+Copy code
 # Health
 curl -s https://lexvion-gpt-stack.vercel.app/api/health | jq .
 curl -s https://lexviongptstack-production.up.railway.app/api/health | jq .
@@ -209,20 +217,15 @@ curl -s https://lexvion-gpt-stack.vercel.app/api/openapi.json | jq '.info, (.pat
 
 # Generate a test 404 to exercise Sentry
 curl -s -o /dev/null -w "%{http_code}\n" https://lexvion-gpt-stack.vercel.app/api/this-does-not-exist
-```
-
 Expected:
 
-* Health → `{"ok":true}`
-* Checks → `{"configured":true}`
-* OpenAPI prints info + path count
-* Last command → `404`
+Health → {"ok":true}
 
----
+Checks → {"configured":true}
 
-## License
+OpenAPI prints info + path count
 
+Last command → 404
+
+License
 MIT
-
-```
-```
