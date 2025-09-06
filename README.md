@@ -1,3 +1,23 @@
+# Lexvion GPT Stack · Secure AI backend + Slack ops, deployable in minutes
+
+**What it is:** Production-ready Node 20 ESM service with Slack entry points, hardened REST APIs, OpenAPI for GPT Actions, and turnkey deploys to Vercel and Railway.
+
+**Live surfaces**
+- **Health:** [Vercel `/api/health`](https://lexvion-gpt-stack.vercel.app/api/health) · [Railway `/api/health`](https://lexviongptstack-production.up.railway.app/api/health)
+- **OpenAPI (for GPT Actions):** [`/api/openapi.json`](https://lexvion-gpt-stack.vercel.app/api/openapi.json)
+- **Demo runbook:** [`DEMO.md`](./DEMO.md)
+- **Security baseline:** [`HARDENING.md`](./HARDENING.md)
+
+**Key features**
+- Slash + Events + Interactivity endpoints with HMAC verification and replay protection (±300s).
+- Provider sanity checks: `/api/check/{supabase,notion,airtable,sendgrid,sentry,slack,gsheets}` → `{ "configured": true }` when env names are present.
+- Rate limits: `/api/slack/*` 120 rpm/IP; other `/api` 100 rpm/IP; `app.set("trust proxy", 1)`.
+- Observability: Sentry DSN wired; “Prod error spike” alert notifies Slack + email.
+- CI/CD: PR quality gate (lint/tests/smoke/OpenAPI), auto-deploy to Vercel & Railway with required checks on `main`.
+
+**Deploy**
+- Dockerfile included. `npm start` entrypoint. Pure ESM.
+
 # Lexvion GPT Stack – Express API
 
 This repository provides a minimal Node.js + Express API layer to integrate
