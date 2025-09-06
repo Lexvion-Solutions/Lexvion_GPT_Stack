@@ -1,117 +1,154 @@
 # Lexvion GPT Stack · Secure AI backend + Slack ops, deployable in minutes
 
-**What it is:** Production-ready Node 20 ESM service with Slack entry points, hardened REST APIs, OpenAPI for GPT Actions, and turnkey deploys to Vercel and Railway.
+**What it is:** Production-ready Node 20 **pure ESM** service with Slack entry points, hardened REST APIs, OpenAPI for GPT Actions, and turnkey deploys to Vercel and Railway.
 
-**Live surfaces**
+<!-- Live status badges -->
+[![CI](https://img.shields.io/github/actions/workflow/status/Lexvion-Solutions/Lexvion_GPT_Stack/quality-gate.yml?label=CI)](https://github.com/Lexvion-Solutions/Lexvion_GPT_Stack/actions)
+[![Vercel](https://img.shields.io/website?url=https%3A%2F%2Flexvion-gpt-stack.vercel.app%2Fapi%2Fhealth&label=Vercel%20prod)](https://lexvion-gpt-stack.vercel.app/api/health)
+[![Railway](https://img.shields.io/website?url=https%3A%2F%2Flexviongptstack-production.up.railway.app%2Fapi%2Fhealth&label=Railway%20prod)](https://lexviongptstack-production.up.railway.app/api/health)
+
+## Live surfaces
 - **Health:** [Vercel `/api/health`](https://lexvion-gpt-stack.vercel.app/api/health) · [Railway `/api/health`](https://lexviongptstack-production.up.railway.app/api/health)
 - **OpenAPI (for GPT Actions):** [`/api/openapi.json`](https://lexvion-gpt-stack.vercel.app/api/openapi.json)
 - **Demo runbook:** [`DEMO.md`](./DEMO.md)
 - **Security baseline:** [`HARDENING.md`](./HARDENING.md)
 
-**Key features**
-- Slash + Events + Interactivity endpoints with HMAC verification and replay protection (±300s).
-- Provider sanity checks: `/api/check/{supabase,notion,airtable,sendgrid,sentry,slack,gsheets}` → `{ "configured": true }` when env names are present.
-- Rate limits: `/api/slack/*` 120 rpm/IP; other `/api` 100 rpm/IP; `app.set("trust proxy", 1)`.
-- Observability: Sentry DSN wired; “Prod error spike” alert notifies Slack + email.
-- CI/CD: PR quality gate (lint/tests/smoke/OpenAPI), auto-deploy to Vercel & Railway with required checks on `main`.
+## Key features
+- Slack **Slash + Events + Interactivity** with HMAC verification and ±300s replay protection.
+- Provider checks: `GET /api/check/{supabase,notion,airtable,sendgrid,sentry,slack,gsheets}` → `{"configured":true}` when env var **names** exist.
+- Rate limits via `express-rate-limit`:
+  - `/api/slack/*` → **120 req/min/IP**
+  - other `/api` → **100 req/min/IP**
+  - `app.set("trust proxy", 1)`
+- Observability: Sentry DSN configured; alert **“Prod error spike”** notifies Slack + email.
+- CI/CD: PR quality gate (lint/tests/smoke/OpenAPI). Auto-deploy to Vercel & Railway with required checks on `main`.
 
-**Deploy**
-- Dockerfile included. `npm start` entrypoint. Pure ESM.
-<!-- Live status badges -->
-[![CI](https://img.shields.io/github/actions/workflow/status/Lexvion-Solutions/Lexvion_GPT_Stack/quality-gate.yml?label=CI)](https://github.com/Lexvion-Solutions/Lexvion_GPT_Stack/actions)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/Lexvion-Solutions/Lexvion_GPT_Stack/codeql.yml?label=CodeQL)](https://github.com/Lexvion-Solutions/Lexvion_GPT_Stack/security/code-scanning)
-[![Vercel](https://img.shields.io/website?url=https%3A%2F%2Flexvion-gpt-stack.vercel.app%2Fapi%2Fhealth&label=Vercel%20prod)](https://lexvion-gpt-stack.vercel.app/api/health)
-[![Railway](https://img.shields.io/website?url=https%3A%2F%2Flexviongptstack-production.up.railway.app%2Fapi%2Fhealth&label=Railway%20prod)](https://lexviongptstack-production.up.railway.app/api/health)
+## Quick links
+- Health: **Vercel** → https://lexvion-gpt-stack.vercel.app/api/health · **Railway** → https://lexviongptstack-production.up.railway.app/api/health  
+- OpenAPI: https://lexvion-gpt-stack.vercel.app/api/openapi.json  
+- Runbook: [DEMO.md](./DEMO.md) · Hardening: [HARDENING.md](./HARDENING.md)
 
-### Quick links
-- Health: **Vercel** → https://lexvion-gpt-stack.vercel.app/api/health · **Railway** → https://lexviongptstack-production.up.railway.app/api/health
-- OpenAPI (for GPT Actions): https://lexvion-gpt-stack.vercel.app/api/openapi.json
-- Demo runbook: [DEMO.md](./DEMO.md)
-- Security baseline: [HARDENING.md](./HARDENING.md)
-
-### One-line Slack test
-In `#demo` type:
+## One-line Slack test
+In Slack channel `#demo`:
 /lex Hello Lexvion
-Expected: `Hi @<you>, you ran /lex with: Hello Lexvion`
+
+markdown
+Copy code
+Expected: `Hi @<your Slack username>, you ran /lex with: Hello Lexvion`
+
+---
 
 # Lexvion GPT Stack – Express API
 
-This repository provides a minimal Node.js + Express API layer to integrate
-with Supabase, Notion, Airtable, SendGrid and Slack.  It is designed
-for server‑side use without any frontend and deploys easily to
-platforms such as Vercel and Railway.
+Minimal Node.js + Express API to integrate Slack with Supabase, Notion, Airtable, SendGrid, Google Sheets, and Sentry. Pure ESM. No frontend.
 
-## Quick start
+## Project structure
+- `index.js` (entrypoint)
+- `routes.js` (HTTP + Slack routes)
+- `services/` (provider integrations)
+- `Dockerfile` (production)
+- `package.json` → `"start": "npm start"`
 
-1. **Prepare your environment**: copy `.env.template` to `.env` and
-   populate the variables with your own keys and URLs.  **Never
-   commit your real secrets.**
-2. **Install dependencies**: run `npm install`.
-3. **Start the server**: run `npm start`.  The server listens on
-   `process.env.PORT` (default `3000`).
+## Quick start (local)
+1. `cp .env.template .env` and set values **locally**. Use names only in commits.
+2. `npm install`
+3. `npm start` (defaults to `PORT=3000`)
+4. Test:
+   ```bash
+   curl -s http://localhost:3000/api/health        # => {"ok":true}
+Demo cURL cheatsheet (prod)
+bash
+Copy code
+# Health
+curl -s https://lexvion-gpt-stack.vercel.app/api/health | jq .
+curl -s https://lexviongptstack-production.up.railway.app/api/health | jq .
 
-### Testing locally
+# Provider checks (Vercel)
+for svc in supabase notion airtable sendgrid sentry slack gsheets; do
+  echo "check/$svc:" && curl -s https://lexvion-gpt-stack.vercel.app/api/check/$svc | jq .
+done
 
-- **Root route** – `GET /` should return `{ "ok": true }`.
-- **Health route** – `GET /api/health` should return `{ "ok": true }`.
+# OpenAPI spec summary
+curl -s https://lexvion-gpt-stack.vercel.app/api/openapi.json | jq '.info, (.paths | keys | length)'
 
-You can test these endpoints with `curl`:
+# Generate a test 404 to exercise Sentry
+curl -s -o /dev/null -w "%{http_code}\n" https://lexvion-gpt-stack.vercel.app/api/this-does-not-exist
+Expected: both health → {"ok":true}; all checks → {"configured":true}; OpenAPI prints info and path count; last line shows 404.
+Note: jq is optional; remove pipes if not installed.
 
-```sh
-curl http://localhost:3000/           # => {"ok":true}
-curl http://localhost:3000/api/health # => {"ok":true}
-```
+Deployment
+Vercel (production)
+Create a Vercel project from this repo.
 
-## Deployment
+Set Environment Variables (names only):
+PORT, SUPABASE_URL, SUPABASE_ANON_KEY, SENTRY_DSN, SLACK_SIGNING_SECRET, SLACK_BOT_TOKEN, NOTION_TOKEN, AIRTABLE_API_KEY, AIRTABLE_BASE_ID, SENDGRID_API_KEY, GSHEETS_CLIENT_EMAIL, GSHEETS_PRIVATE_KEY
 
-### Vercel
+GSHEETS_PRIVATE_KEY must be saved with real newlines.
 
-1. Create a new Vercel project from this repository.
-2. In the Vercel dashboard, define the environment variables listed
-   in `.env.template`.  Only names are committed; values must be
-   provided securely.
-3. When Vercel builds your project it will run `npm install` and
-   `npm start`.  The health route is available at
-   `https://<your-app>.vercel.app/api/health`.
+Deploy. Health: https://<app>.vercel.app/api/health.
 
-### Railway
+Railway (production)
+Create a Railway service from this repo.
 
-1. Create a new Railway project from this repository.
-2. Railway will detect a Node.js app automatically.  Define the same
-   environment variables in your project’s settings.
-3. A `Procfile` is included with `web: npm start` so Railway knows
-   how to run the service.  If Railway fails to detect the project
-   correctly, a `Dockerfile` is also provided.  The Dockerfile
-   exposes `$PORT` and starts the server via `npm start`.  You can
-   enable Docker builds in Railway’s settings if needed.
+Set the same env var names as above.
 
-## Slack setup
+Deploy. Health: https://<app>.up.railway.app/api/health.
 
-Configure your Slack app to send requests to your Vercel deployment:
+Slack app configuration
+Slash /lex → Request URL: POST https://<host>/api/slack/command (URL-encoded).
 
-- **Events** URL – `https://<your-vercel-app>.vercel.app/api/slack/events`
-- **Interactive components** URL – `https://<your-vercel-app>.vercel.app/api/slack/interactive`
+Events → POST https://<host>/api/slack/events (HMAC + url_verification).
 
-These endpoints are implemented in `routes.js` and use the raw
-request body to verify Slack signatures.  The server always responds
-`200 OK` to `app_mention` events.  Make sure `SLACK_SIGNING_SECRET`
-is defined in your environment; only the name is committed in
-`.env.template`.
+Interactivity → POST https://<host>/api/slack/interactive (HMAC; URL-encoded payload).
 
-## Smoke test endpoints
+HMAC signature window ±300s. Invite the app to the target channel.
 
-For quick diagnostics of your configuration, the API exposes several
-check endpoints:
+Routes
+GET /api/health → {"ok":true}
 
-- `GET /api/check/sentry` – if `SENTRY_DSN` is defined this route triggers
-  a test exception and returns `{ "configured": true }`; if not it
-  returns `{ "configured": false }` without sending anything to Sentry.
-- `GET /api/check/notion` – returns `{ "configured": true }` when
-  `NOTION_API_KEY` is set.
-- `GET /api/check/airtable` – returns `{ "configured": true }` when
-  `AIRTABLE_API_KEY` is set.
-- `GET /api/check/supabase` – returns `{ "configured": true }` when
-  both `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE` are set.
+GET /api/check/{supabase|notion|airtable|sendgrid|sentry|slack|gsheets} → {"configured":true} when related env var names exist.
 
-These endpoints perform no external API calls; they solely verify the
-presence of the associated environment variables.
+GET /api/openapi.json → OpenAPI spec (used by GPT Actions)
+
+POST /api/slack/command → echoes sanitized input; length-clamped
+
+POST /api/slack/events → verifies HMAC; supports Slack URL verification
+
+POST /api/slack/interactive → verifies HMAC
+
+Security and reliability
+Rate limiting: /api/slack/* 120 rpm/IP; other /api 100 rpm/IP.
+
+Headers: security headers enabled; request logging with secret redaction.
+
+Trust proxy: app.set("trust proxy", 1) for accurate IPs behind Vercel/Railway.
+
+Observability
+Sentry DSN configured. Alert “Prod error spike”:
+
+Triggers on new issue and on >50 events in 5 minutes.
+
+Notifies Slack and email.
+
+CI/CD
+.github/workflows/quality-gate.yml → lint, tests, smoke, OpenAPI on PR.
+
+.github/workflows/vercel-deploy.yml → deploy main to Vercel.
+
+.github/workflows/railway-deploy.yml → deploy main to Railway.
+
+Branch protection on main: PR required, status checks required, up-to-date required, block force pushes/deletions, ≥1 reviewer.
+
+Required checks: CI, Code scanning results (CodeQL), Vercel Deployment, Railway App.
+
+Troubleshooting
+A provider check returns false → fix the env var name on that provider.
+
+Slack not responding → verify SLACK_SIGNING_SECRET and Request URLs match the /api/slack/ paths above.
+
+Sentry alert missing → ensure DSN is set and environment is production.
+
+GSHEETS_PRIVATE_KEY errors → store with real newlines.
+
+License
+MIT
