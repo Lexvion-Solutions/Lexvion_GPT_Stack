@@ -75,13 +75,15 @@ function slackGate(req, res, next) {
   next();
 }
 
-app.use("/api/slack/events", express.raw({ type: "*/*" }), slackGate);
-app.use("/api/slack/interactive", express.raw({ type: "*/*" }), slackGate);
+// Raw + HMAC on all Slack ingress (64 KB cap for urlencoded bodies)
+app.use("/api/slack/events", express.raw({ type: "*/*", limit: "64kb" }), slackGate);
+app.use("/api/slack/interactive", express.raw({ type: "*/*", limit: "64kb" }), slackGate);
+app.use("/api/slack/command", express.raw({ type: "*/*", limit: "64kb" }), slackGate);
 
-// JSON parser for everything else; cap size
+// JSON parser for everything else; cap size at 256 KB
 app.use((req, res, next) => {
   if (req.path.startsWith("/api/slack/")) return next();
-  return express.json({ limit: "200kb" })(req, res, next);
+  return express.json({ limit: "256kb" })(req, res, next);
 });
 
 // Basic endpoints
@@ -94,6 +96,7 @@ app.use("/api", routes);
 // 404 + error handling
 app.use((req, res) => res.status(404).json({ error: "Not Found" }));
 app.use((err, _req, res, _next) => {
+  try { Sentry.captureException?.(err); } catch {}
   console.error(err);
   res.status(500).json({ error: "Internal Server Error" });
 });
