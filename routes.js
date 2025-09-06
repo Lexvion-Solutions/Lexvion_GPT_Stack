@@ -51,14 +51,34 @@ router.post("/slack/interactive", async (req, res) => {
 });
 
 /**
+ * Minimal sanitizer for reflected text in Slack responses.
+ * Escapes characters relevant to XSS even in JSON contexts.
+ */
+const sanitize = (v) =>
+  String(v ?? "")
+    .replace(/[&<>"'`]/g, (c) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+      "`": "&#96;",
+    })[c]);
+
+const clamp = (s, n) => (s.length > n ? s.slice(0, n) : s);
+
+/**
  * Slack Slash Command (/lex)
- * Uses urlencoded parser. Optional to add signature verification later.
+ * Uses urlencoded parser. Reflects sanitized user input.
  */
 router.post("/slack/command", express.urlencoded({ extended: true }), (req, res) => {
   const { text, user_name } = req.body || {};
+  const safeUser = clamp(sanitize(user_name || "user"), 80);
+  const safeText = clamp(sanitize(text || "(no text)"), 300);
+  res.set("X-Content-Type-Options", "nosniff");
   res.json({
     response_type: "in_channel",
-    text: `👋 Hi @${user_name || "user"}, you ran /lex with: ${text || "(no text)"}`,
+    text: `👋 Hi @${safeUser}, you ran /lex with: ${safeText}`,
   });
 });
 
