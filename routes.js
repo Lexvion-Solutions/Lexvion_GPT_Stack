@@ -1,3 +1,4 @@
+// ============================= BEGIN routes.js =============================
 import express from "express";
 
 const router = express.Router();
@@ -133,20 +134,16 @@ router.get("/check/gsheets", (_req, res) => {
 
 /**
  * OpenAPI schema for ChatGPT Actions
- * Server URL is dynamic via OPENAPI_BASE_URL or VERCEL_URL.
+ * Server URL is the origin (no trailing /api). Paths include /api/*.
  */
+const serverBase =
+  process.env.OPENAPI_BASE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://lexvion-gpt-stack.vercel.app");
+
 const openapi = {
   openapi: "3.1.0",
   info: { title: "Lexvion GPT Stack API", version: "1.0.0" },
-  servers: [
-    {
-      url:
-        process.env.OPENAPI_BASE_URL ||
-        (process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}/api`
-          : "https://lexvion-gpt-stack.vercel.app/api"),
-    },
-  ],
+  servers: [{ url: serverBase }],
   paths: {
     "/api/health": {
       get: {
@@ -281,4 +278,36 @@ const openapi = {
 
 router.get("/openapi.json", (_req, res) => res.json(openapi));
 
+/**
+ * Public OpenAPI viewer (no deps) at /api/docs
+ * Renders Redoc against the live /api/openapi.json
+ *
+ * NOTE: This router is mounted under /api in index.js, so the route is /api/docs.
+ */
+const redocHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Lexvion GPT Stack — API Docs</title>
+  <link rel="icon" href="data:,">
+  <style>
+    html,body { height:100%; margin:0; }
+    body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    redoc { height: 100vh; }
+  </style>
+</head>
+<body>
+  <redoc spec-url="/api/openapi.json"></redoc>
+  <script src="https://cdn.jsdelivr.net/npm/redoc@2.1.4/bundles/redoc.standalone.js" crossorigin="anonymous"></script>
+</body>
+</html>`;
+
+router.get("/docs", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.type("html").send(redocHtml);
+});
+
 export default router;
+// ============================== END routes.js ==============================
