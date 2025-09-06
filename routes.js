@@ -1,99 +1,123 @@
-// routes.js
 import express from "express";
-import crypto from "crypto";
 
-const r = express.Router();
+const router = express.Router();
 
 /**
- * Slack Events (signature verified). Uses raw text to compute HMAC.
+ * Slack Events
+ * HMAC is already verified in index.js. Body arrives as a UTF-8 string.
  */
-r.post("/slack/events", express.text({ type: "*/*" }), (req, res) => {
-  const sig = req.headers["x-slack-signature"];
-  const ts = req.headers["x-slack-request-timestamp"];
-  const secret = process.env.SLACK_SIGNING_SECRET || "";
-  if (!sig || !secret) return res.sendStatus(401);
-
-  const base = `v0:${ts}:${req.body}`;
-  const my = "v0=" + crypto.createHmac("sha256", secret).update(base).digest("hex");
-
+router.post("/slack/events", async (req, res) => {
   try {
-    if (!crypto.timingSafeEqual(Buffer.from(my), Buffer.from(sig))) return res.sendStatus(401);
-  } catch {
-    return res.sendStatus(401);
-  }
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
-  try {
-    const payload = JSON.parse(req.body || "{}");
-    if (payload.type === "url_verification") return res.status(200).send(payload.challenge);
-    return res.sendStatus(200);
-  } catch {
-    return res.sendStatus(200);
+    // URL verification (challenge)
+    if (body?.type === "url_verification" && body?.challenge) {
+      return res.status(200).send(body.challenge);
+    }
+
+    // Handle event callbacks (body.event)
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error("slack/events parse error", err);
+    return res.status(400).json({ error: "Bad Slack events payload" });
   }
 });
 
 /**
- * Slack Interactivity ACK
+ * Slack Interactivity
+ * Body is a UTF-8 string of x-www-form-urlencoded. Extract 'payload' then JSON.parse.
  */
-r.post("/slack/interactive", (_req, res) => res.sendStatus(200));
+router.post("/slack/interactive", async (req, res) => {
+  try {
+    let payloadJson = null;
+
+    if (typeof req.body === "string") {
+      const params = new URLSearchParams(req.body);
+      const p = params.get("payload");
+      if (!p) return res.status(400).json({ error: "Missing payload" });
+      payloadJson = JSON.parse(p);
+    } else if (req.body?.payload) {
+      payloadJson = JSON.parse(req.body.payload);
+    } else {
+      return res.status(400).json({ error: "Invalid payload" });
+    }
+
+    // Handle actions/views/modals using payloadJson
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error("slack/interactive parse error", err);
+    return res.status(400).json({ error: "Bad Slack interactive payload" });
+  }
+});
 
 /**
- * Slack Slash Command handler (/lex)
+ * Slack Slash Command (/lex)
+ * Uses urlencoded parser. Optional to add signature verification later.
  */
-r.post("/slack/command", express.urlencoded({ extended: true }), (req, res) => {
-  const { text, user_name } = req.body;
+router.post("/slack/command", express.urlencoded({ extended: true }), (req, res) => {
+  const { text, user_name } = req.body || {};
   res.json({
     response_type: "in_channel",
-    text: `👋 Hi @${user_name}, you ran /lex with: ${text || "(no text)"}`,
+    text: `👋 Hi @${user_name || "user"}, you ran /lex with: ${text || "(no text)"}`,
   });
 });
 
 /**
  * Integration checks
  */
-r.get("/check/supabase", (_req, res) => {
+router.get("/check/supabase", (_req, res) => {
   const configured = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
   res.json({ configured });
 });
 
-r.get("/check/notion", (_req, res) => {
+router.get("/check/notion", (_req, res) => {
   const configured = Boolean(process.env.NOTION_TOKEN);
   res.json({ configured });
 });
 
-r.get("/check/airtable", (_req, res) => {
+router.get("/check/airtable", (_req, res) => {
   const configured = Boolean(process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID);
   res.json({ configured });
 });
 
-r.get("/check/sendgrid", (_req, res) => {
+router.get("/check/sendgrid", (_req, res) => {
   const configured = Boolean(process.env.SENDGRID_API_KEY);
   res.json({ configured });
 });
 
-r.get("/check/sentry", (_req, res) => {
+router.get("/check/sentry", (_req, res) => {
   const configured = Boolean(process.env.SENTRY_DSN);
   res.json({ configured });
 });
 
-r.get("/check/slack", (_req, res) => {
+router.get("/check/slack", (_req, res) => {
   const configured = Boolean(process.env.SLACK_SIGNING_SECRET && process.env.SLACK_BOT_TOKEN);
   res.json({ configured });
 });
 
-r.get("/check/gsheets", (_req, res) => {
+router.get("/check/gsheets", (_req, res) => {
   const configured = Boolean(process.env.GSHEETS_CLIENT_EMAIL && process.env.GSHEETS_PRIVATE_KEY);
   res.json({ configured });
 });
 
 /**
  * OpenAPI schema for ChatGPT Actions
+ * Server URL is dynamic via OPENAPI_BASE_URL or VERCEL_URL.
  */
 const openapi = {
   openapi: "3.1.0",
   info: { title: "Lexvion GPT Stack API", version: "1.0.0" },
-  servers: [{ url: "https://lexvion-gpt-stack.vercel.app/api" }],
+  servers: [
+    {
+      url:
+        process.env.OPENAPI_BASE_URL ||
+        (process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}/api`
+          : "https://lexvion-gpt-stack.vercel.app/api"),
+    },
+  ],
   paths: {
-    "/health": {
+    "/api/health": {
       get: {
         operationId: "getHealth",
         summary: "Health check",
@@ -102,23 +126,23 @@ const openapi = {
             description: "OK",
             content: {
               "application/json": {
-                schema: { type: "object", properties: { ok: { type: "boolean" } } }
-              }
-            }
-          }
-        }
-      }
+                schema: { type: "object", properties: { ok: { type: "boolean" } } },
+              },
+            },
+          },
+        },
+      },
     },
-    "/check/supabase": { get: { operationId: "checkSupabase", responses: { "200": { description: "OK" } } } },
-    "/check/notion":   { get: { operationId: "checkNotion",   responses: { "200": { description: "OK" } } } },
-    "/check/airtable": { get: { operationId: "checkAirtable", responses: { "200": { description: "OK" } } } },
-    "/check/sendgrid": { get: { operationId: "checkSendgrid", responses: { "200": { description: "OK" } } } },
-    "/check/sentry":   { get: { operationId: "checkSentry",   responses: { "200": { description: "OK" } } } },
-    "/check/slack":    { get: { operationId: "checkSlack",    responses: { "200": { description: "OK" } } } },
-    "/check/gsheets":  { get: { operationId: "checkGsheets",  responses: { "200": { description: "OK" } } } }
-  }
+    "/api/check/supabase": { get: { operationId: "checkSupabase", responses: { "200": { description: "OK" } } } },
+    "/api/check/notion": { get: { operationId: "checkNotion", responses: { "200": { description: "OK" } } } },
+    "/api/check/airtable": { get: { operationId: "checkAirtable", responses: { "200": { description: "OK" } } } },
+    "/api/check/sendgrid": { get: { operationId: "checkSendgrid", responses: { "200": { description: "OK" } } } },
+    "/api/check/sentry": { get: { operationId: "checkSentry", responses: { "200": { description: "OK" } } } },
+    "/api/check/slack": { get: { operationId: "checkSlack", responses: { "200": { description: "OK" } } } },
+    "/api/check/gsheets": { get: { operationId: "checkGsheets", responses: { "200": { description: "OK" } } } },
+  },
 };
 
-r.get("/openapi.json", (_req, res) => res.json(openapi));
+router.get("/openapi.json", (_req, res) => res.json(openapi));
 
-export default r;
+export default router;

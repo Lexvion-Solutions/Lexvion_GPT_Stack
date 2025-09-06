@@ -1,37 +1,98 @@
 import express from "express";
 import * as Sentry from "@sentry/node";
+import rateLimit from "express-rate-limit";
+import { securityMiddleware, redactLogging, verifySlack } from "./security.js";
 import routes from "./routes.js";
 
-Sentry.init({ dsn: process.env.SENTRY_DSN });
+/**
+ * Sentry
+ * - Samples via SENTRY_SAMPLE_RATE or defaults to 0.1
+ * - Redacts sensitive headers before sending
+ */
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: process.env.SENTRY_SAMPLE_RATE
+    ? Number(process.env.SENTRY_SAMPLE_RATE)
+    : 0.1,
+  beforeSend(event) {
+    if (event?.request?.headers) {
+      ["authorization", "cookie", "x-slack-signature"].forEach((key) => {
+        if (event.request.headers[key]) event.request.headers[key] = "[REDACTED]";
+      });
+    }
+    return event;
+  },
+});
 
 const app = express();
+app.disable("x-powered-by");
 
-// Apply JSON parsing to everything except Slack endpoints.
-// Slack needs the raw body for signature verification.
+// ensure correct client IPs behind Vercel/Railway
+app.set("trust proxy", 1);
+
+// Security headers + redacted logging
+app.use(securityMiddleware);
+app.use(redactLogging);
+
+/**
+ * Rate limiting
+ * - Slack gets its own generous limiter to account for Slack retries
+ * - General /api limiter skips /slack paths to avoid double limiting
+ */
+const slackLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 100,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  skip: (req) => req.path?.startsWith("/slack"),
+});
+
+// Apply limiters before parsers/handlers
+app.use("/api/slack", slackLimiter);
+app.use("/api", apiLimiter);
+
+/**
+ * Slack endpoints need raw body for HMAC verification.
+ * After verifying, convert Buffer -> string so downstream handlers can read it.
+ */
+function slackGate(req, res, next) {
+  verifySlack(req, res, req.body);
+  if (res.headersSent) return;
+  if (Buffer.isBuffer(req.body)) {
+    try {
+      req.body = req.body.toString("utf8");
+    } catch {
+      // leave as-is if conversion fails
+    }
+  }
+  next();
+}
+
+app.use("/api/slack/events", express.raw({ type: "*/*" }), slackGate);
+app.use("/api/slack/interactive", express.raw({ type: "*/*" }), slackGate);
+
+// JSON parser for everything else; cap size
 app.use((req, res, next) => {
   if (req.path.startsWith("/api/slack/")) return next();
-  return express.json()(req, res, next);
+  return express.json({ limit: "200kb" })(req, res, next);
 });
 
-app.use((req, _res, next) => {
-  console.log(`${req.method} ${req.path}`);
-  next();
-});
+// Basic endpoints
+app.get("/", (_req, res) => res.json({ ok: true }));
+app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
-app.get("/", (_req, res) => {
-  res.json({ ok: true });
-});
-
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true });
-});
-
+// API routes (includes /api/check/* and Slack handlers)
 app.use("/api", routes);
 
-app.use((req, res) => {
-  res.status(404).json({ error: "Not Found" });
-});
-
+// 404 + error handling
+app.use((req, res) => res.status(404).json({ error: "Not Found" }));
 app.use((err, _req, res, _next) => {
   console.error(err);
   res.status(500).json({ error: "Internal Server Error" });
@@ -39,13 +100,14 @@ app.use((err, _req, res, _next) => {
 
 const port = process.env.PORT || 3000;
 
-// Hardcoded required env vars (from .env.template)
+// Required envs (fail fast)
 const REQUIRED_ENV = [
   "SENTRY_DSN",
   "SUPABASE_URL",
   "SUPABASE_ANON_KEY",
   "SLACK_SIGNING_SECRET",
   "SLACK_BOT_TOKEN",
+  // "SENTRY_SAMPLE_RATE" is optional
 ];
 
 (() => {
