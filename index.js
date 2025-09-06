@@ -1,5 +1,6 @@
 import express from "express";
 import * as Sentry from "@sentry/node";
+import rateLimit from "express-rate-limit";
 import { securityMiddleware, redactLogging, verifySlack } from "./security.js";
 import routes from "./routes.js";
 
@@ -24,11 +25,38 @@ Sentry.init({
 });
 
 const app = express();
-app.disable("x-powered-by"); // hide Express fingerprint
+app.disable("x-powered-by");
+
+// ensure correct client IPs behind Vercel/Railway
+app.set("trust proxy", 1);
 
 // Security headers + redacted logging
 app.use(securityMiddleware);
 app.use(redactLogging);
+
+/**
+ * Rate limiting
+ * - Slack gets its own generous limiter to account for Slack retries
+ * - General /api limiter skips /slack paths to avoid double limiting
+ */
+const slackLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 120,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 100,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  skip: (req) => req.path?.startsWith("/slack"),
+});
+
+// Apply limiters before parsers/handlers
+app.use("/api/slack", slackLimiter);
+app.use("/api", apiLimiter);
 
 /**
  * Slack endpoints need raw body for HMAC verification.
