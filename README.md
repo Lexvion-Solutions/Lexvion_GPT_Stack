@@ -17,6 +17,22 @@
 
 **Deploy**
 - Dockerfile included. `npm start` entrypoint. Pure ESM.
+<!-- Live status badges -->
+[![CI](https://img.shields.io/github/actions/workflow/status/Lexvion-Solutions/Lexvion_GPT_Stack/quality-gate.yml?label=CI)](https://github.com/Lexvion-Solutions/Lexvion_GPT_Stack/actions)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/Lexvion-Solutions/Lexvion_GPT_Stack/codeql.yml?label=CodeQL)](https://github.com/Lexvion-Solutions/Lexvion_GPT_Stack/security/code-scanning)
+[![Vercel](https://img.shields.io/website?url=https%3A%2F%2Flexvion-gpt-stack.vercel.app%2Fapi%2Fhealth&label=Vercel%20prod)](https://lexvion-gpt-stack.vercel.app/api/health)
+[![Railway](https://img.shields.io/website?url=https%3A%2F%2Flexviongptstack-production.up.railway.app%2Fapi%2Fhealth&label=Railway%20prod)](https://lexviongptstack-production.up.railway.app/api/health)
+
+### Quick links
+- Health: **Vercel** → https://lexvion-gpt-stack.vercel.app/api/health · **Railway** → https://lexviongptstack-production.up.railway.app/api/health
+- OpenAPI (for GPT Actions): https://lexvion-gpt-stack.vercel.app/api/openapi.json
+- Demo runbook: [DEMO.md](./DEMO.md)
+- Security baseline: [HARDENING.md](./HARDENING.md)
+
+### One-line Slack test
+In `#demo` type:
+/lex Hello Lexvion
+Expected: `Hi @<you>, you ran /lex with: Hello Lexvion`
 
 # Lexvion GPT Stack – Express API
 
