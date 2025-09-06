@@ -133,19 +133,32 @@ router.get("/check/gsheets", (_req, res) => {
 });
 
 /**
- * OpenAPI schema for ChatGPT Actions
- * Server URL is the origin (no trailing /api). Paths include /api/*.
+ * Monitoring demo: force a server error to exercise Sentry
+ * NOTE: Router is mounted under /api, so full path is /api/test/sentry.
+ */
+router.get("/test/sentry", (_req, _res, next) => {
+  const err = new Error("DemoError: intentional server error for monitoring demo");
+  err.status = 500;
+  next(err);
+});
+
+/**
+ * OpenAPI schema
+ * CI requires servers[0].url to END with /api.
+ * Therefore servers.url ends with /api and PATHS OMIT the /api prefix.
  */
 const serverBase =
   process.env.OPENAPI_BASE_URL ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://lexvion-gpt-stack.vercel.app");
 
+const serverUrl = `${serverBase.replace(/\/$/, "")}/api`;
+
 const openapi = {
   openapi: "3.1.0",
   info: { title: "Lexvion GPT Stack API", version: "1.0.0" },
-  servers: [{ url: serverBase }],
+  servers: [{ url: serverUrl }],
   paths: {
-    "/api/health": {
+    "/health": {
       get: {
         operationId: "getHealth",
         summary: "Health check",
@@ -161,7 +174,7 @@ const openapi = {
         },
       },
     },
-    "/api/check/supabase": {
+    "/check/supabase": {
       get: {
         operationId: "checkSupabase",
         summary: "Supabase configuration check",
@@ -177,7 +190,7 @@ const openapi = {
         },
       },
     },
-    "/api/check/notion": {
+    "/check/notion": {
       get: {
         operationId: "checkNotion",
         summary: "Notion configuration check",
@@ -193,7 +206,7 @@ const openapi = {
         },
       },
     },
-    "/api/check/airtable": {
+    "/check/airtable": {
       get: {
         operationId: "checkAirtable",
         summary: "Airtable configuration check",
@@ -209,7 +222,7 @@ const openapi = {
         },
       },
     },
-    "/api/check/sendgrid": {
+    "/check/sendgrid": {
       get: {
         operationId: "checkSendgrid",
         summary: "Sendgrid configuration check",
@@ -225,7 +238,7 @@ const openapi = {
         },
       },
     },
-    "/api/check/sentry": {
+    "/check/sentry": {
       get: {
         operationId: "checkSentry",
         summary: "Sentry configuration check",
@@ -241,7 +254,7 @@ const openapi = {
         },
       },
     },
-    "/api/check/slack": {
+    "/check/slack": {
       get: {
         operationId: "checkSlack",
         summary: "Slack configuration check",
@@ -257,7 +270,7 @@ const openapi = {
         },
       },
     },
-    "/api/check/gsheets": {
+    "/check/gsheets": {
       get: {
         operationId: "checkGsheets",
         summary: "Google Sheets configuration check",
