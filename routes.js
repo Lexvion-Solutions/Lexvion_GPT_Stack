@@ -69,17 +69,28 @@ const clamp = (s, n) => (s.length > n ? s.slice(0, n) : s);
 
 /**
  * Slack Slash Command (/lex)
- * Uses urlencoded parser. Reflects sanitized user input.
+ * Uses raw body (set in index.js) so HMAC verification can run first.
+ * We parse urlencoded ourselves to avoid consuming the raw body earlier.
  */
-router.post("/slack/command", express.urlencoded({ extended: true }), (req, res) => {
-  const { text, user_name } = req.body || {};
-  const safeUser = clamp(sanitize(user_name || "user"), 80);
-  const safeText = clamp(sanitize(text || "(no text)"), 300);
-  res.set("X-Content-Type-Options", "nosniff");
-  res.json({
-    response_type: "in_channel",
-    text: `👋 Hi @${safeUser}, you ran /lex with: ${safeText}`,
-  });
+router.post("/slack/command", (req, res) => {
+  try {
+    const bodyStr = typeof req.body === "string" ? req.body : "";
+    const params = new URLSearchParams(bodyStr);
+    const text = params.get("text") || "(no text)";
+    const user_name = params.get("user_name") || "user";
+
+    const safeUser = clamp(sanitize(user_name), 80);
+    const safeText = clamp(sanitize(text), 300);
+
+    res.set("X-Content-Type-Options", "nosniff");
+    return res.json({
+      response_type: "in_channel",
+      text: `👋 Hi @${safeUser}, you ran /lex with: ${safeText}`,
+    });
+  } catch (err) {
+    console.error("slack/command parse error", err);
+    return res.status(400).json({ error: "Bad Slack command payload" });
+  }
 });
 
 /**
@@ -153,13 +164,118 @@ const openapi = {
         },
       },
     },
-    "/api/check/supabase": { get: { operationId: "checkSupabase", responses: { "200": { description: "OK" } } } },
-    "/api/check/notion": { get: { operationId: "checkNotion", responses: { "200": { description: "OK" } } } },
-    "/api/check/airtable": { get: { operationId: "checkAirtable", responses: { "200": { description: "OK" } } } },
-    "/api/check/sendgrid": { get: { operationId: "checkSendgrid", responses: { "200": { description: "OK" } } } },
-    "/api/check/sentry": { get: { operationId: "checkSentry", responses: { "200": { description: "OK" } } } },
-    "/api/check/slack": { get: { operationId: "checkSlack", responses: { "200": { description: "OK" } } } },
-    "/api/check/gsheets": { get: { operationId: "checkGsheets", responses: { "200": { description: "OK" } } } },
+    "/api/check/supabase": {
+      get: {
+        operationId: "checkSupabase",
+        summary: "Supabase configuration check",
+        responses: {
+          "200": {
+            description: "OK",
+            content: {
+              "application/json": {
+                schema: { type: "object", properties: { configured: { type: "boolean" } } },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/check/notion": {
+      get: {
+        operationId: "checkNotion",
+        summary: "Notion configuration check",
+        responses: {
+          "200": {
+            description: "OK",
+            content: {
+              "application/json": {
+                schema: { type: "object", properties: { configured: { type: "boolean" } } },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/check/airtable": {
+      get: {
+        operationId: "checkAirtable",
+        summary: "Airtable configuration check",
+        responses: {
+          "200": {
+            description: "OK",
+            content: {
+              "application/json": {
+                schema: { type: "object", properties: { configured: { type: "boolean" } } },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/check/sendgrid": {
+      get: {
+        operationId: "checkSendgrid",
+        summary: "Sendgrid configuration check",
+        responses: {
+          "200": {
+            description: "OK",
+            content: {
+              "application/json": {
+                schema: { type: "object", properties: { configured: { type: "boolean" } } },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/check/sentry": {
+      get: {
+        operationId: "checkSentry",
+        summary: "Sentry configuration check",
+        responses: {
+          "200": {
+            description: "OK",
+            content: {
+              "application/json": {
+                schema: { type: "object", properties: { configured: { type: "boolean" } } },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/check/slack": {
+      get: {
+        operationId: "checkSlack",
+        summary: "Slack configuration check",
+        responses: {
+          "200": {
+            description: "OK",
+            content: {
+              "application/json": {
+                schema: { type: "object", properties: { configured: { type: "boolean" } } },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/api/check/gsheets": {
+      get: {
+        operationId: "checkGsheets",
+        summary: "Google Sheets configuration check",
+        responses: {
+          "200": {
+            description: "OK",
+            content: {
+              "application/json": {
+                schema: { type: "object", properties: { configured: { type: "boolean" } } },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
 
