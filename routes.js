@@ -53,25 +53,20 @@ router.post("/slack/interactive", async (req, res) => {
 
 /**
  * Minimal sanitizer for reflected text in Slack responses.
- * Escapes characters relevant to XSS even in JSON contexts.
  */
 const sanitize = (v) =>
-  String(v ?? "")
-    .replace(/[&<>"'`]/g, (c) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;",
-      "`": "&#96;",
-    })[c]);
-
+  String(v ?? "").replace(/[&<>"'`]/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+    "`": "&#96;",
+  })[c]);
 const clamp = (s, n) => (s.length > n ? s.slice(0, n) : s);
 
 /**
  * Slack Slash Command (/lex)
- * Uses raw body (set in index.js) so HMAC verification can run first.
- * We parse urlencoded ourselves to avoid consuming the raw body earlier.
  */
 router.post("/slack/command", (req, res) => {
   try {
@@ -101,56 +96,50 @@ router.get("/check/supabase", (_req, res) => {
   const configured = Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
   res.json({ configured });
 });
-
 router.get("/check/notion", (_req, res) => {
   const configured = Boolean(process.env.NOTION_TOKEN);
   res.json({ configured });
 });
-
 router.get("/check/airtable", (_req, res) => {
   const configured = Boolean(process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID);
   res.json({ configured });
 });
-
 router.get("/check/sendgrid", (_req, res) => {
   const configured = Boolean(process.env.SENDGRID_API_KEY);
   res.json({ configured });
 });
-
 router.get("/check/sentry", (_req, res) => {
   const configured = Boolean(process.env.SENTRY_DSN);
   res.json({ configured });
 });
-
 router.get("/check/slack", (_req, res) => {
   const configured = Boolean(process.env.SLACK_SIGNING_SECRET && process.env.SLACK_BOT_TOKEN);
   res.json({ configured });
 });
-
 router.get("/check/gsheets", (_req, res) => {
   const configured = Boolean(process.env.GSHEETS_CLIENT_EMAIL && process.env.GSHEETS_PRIVATE_KEY);
   res.json({ configured });
 });
 
 /**
- * Monitoring demo: force a server error to exercise Sentry
- * NOTE: Router is mounted under /api, so full path is /api/test/sentry.
+ * Monitoring demo: return a visible 500 JSON (works even without Sentry)
+ * Full path: /api/test/sentry  (router is mounted at /api)
  */
-router.get("/test/sentry", (_req, _res, next) => {
-  const err = new Error("DemoError: intentional server error for monitoring demo");
-  err.status = 500;
-  next(err);
+router.get("/test/sentry", (_req, res) => {
+  res.status(500).json({
+    ok: false,
+    error: "DemoError: intentional server error for monitoring demo",
+  });
 });
 
 /**
  * OpenAPI schema
  * CI requires servers[0].url to end with /api AND expects /api/* paths.
- * To keep Try-It working, we include both unprefixed and /api/* path entries.
+ * We include both unprefixed and /api/* path entries to satisfy CI and dev tools.
  */
 const serverBase =
   process.env.OPENAPI_BASE_URL ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://lexvion-gpt-stack.vercel.app");
-
 const serverUrl = `${serverBase.replace(/\/$/, "")}/api`;
 
 // Canonical operations (without /api prefix)
@@ -162,11 +151,7 @@ const basePaths = {
       responses: {
         "200": {
           description: "OK",
-          content: {
-            "application/json": {
-              schema: { type: "object", properties: { ok: { type: "boolean" } } },
-            },
-          },
+          content: { "application/json": { schema: { type: "object", properties: { ok: { type: "boolean" } } } } },
         },
       },
     },
@@ -178,11 +163,7 @@ const basePaths = {
       responses: {
         "200": {
           description: "OK",
-          content: {
-            "application/json": {
-              schema: { type: "object", properties: { configured: { type: "boolean" } } },
-            },
-          },
+          content: { "application/json": { schema: { type: "object", properties: { configured: { type: "boolean" } } } } },
         },
       },
     },
@@ -194,11 +175,7 @@ const basePaths = {
       responses: {
         "200": {
           description: "OK",
-          content: {
-            "application/json": {
-              schema: { type: "object", properties: { configured: { type: "boolean" } } },
-            },
-          },
+          content: { "application/json": { schema: { type: "object", properties: { configured: { type: "boolean" } } } } },
         },
       },
     },
@@ -210,11 +187,7 @@ const basePaths = {
       responses: {
         "200": {
           description: "OK",
-          content: {
-            "application/json": {
-              schema: { type: "object", properties: { configured: { type: "boolean" } } },
-            },
-          },
+          content: { "application/json": { schema: { type: "object", properties: { configured: { type: "boolean" } } } } },
         },
       },
     },
@@ -226,11 +199,7 @@ const basePaths = {
       responses: {
         "200": {
           description: "OK",
-          content: {
-            "application/json": {
-              schema: { type: "object", properties: { configured: { type: "boolean" } } },
-            },
-          },
+          content: { "application/json": { schema: { type: "object", properties: { configured: { type: "boolean" } } } } },
         },
       },
     },
@@ -242,11 +211,7 @@ const basePaths = {
       responses: {
         "200": {
           description: "OK",
-          content: {
-            "application/json": {
-              schema: { type: "object", properties: { configured: { type: "boolean" } } },
-            },
-          },
+          content: { "application/json": { schema: { type: "object", properties: { configured: { type: "boolean" } } } } },
         },
       },
     },
@@ -258,11 +223,7 @@ const basePaths = {
       responses: {
         "200": {
           description: "OK",
-          content: {
-            "application/json": {
-              schema: { type: "object", properties: { configured: { type: "boolean" } } },
-            },
-          },
+          content: { "application/json": { schema: { type: "object", properties: { configured: { type: "boolean" } } } } },
         },
       },
     },
@@ -274,11 +235,7 @@ const basePaths = {
       responses: {
         "200": {
           description: "OK",
-          content: {
-            "application/json": {
-              schema: { type: "object", properties: { configured: { type: "boolean" } } },
-            },
-          },
+          content: { "application/json": { schema: { type: "object", properties: { configured: { type: "boolean" } } } } },
         },
       },
     },
@@ -289,7 +246,6 @@ const openapi = {
   openapi: "3.1.0",
   info: { title: "Lexvion GPT Stack API", version: "1.0.0" },
   servers: [{ url: serverUrl }],
-  // Include BOTH unprefixed paths (for correct base) and /api/* paths (for CI script expectations)
   paths: {
     ...basePaths,
     "/api/health": basePaths["/health"],
@@ -306,36 +262,63 @@ const openapi = {
 router.get("/openapi.json", (_req, res) => res.json(openapi));
 
 /**
- * Public OpenAPI viewer (no deps) at /api/docs
- * Renders Redoc against the live /api/openapi.json
- *
- * NOTE: This router is mounted under /api in index.js, so the route is /api/docs.
+ * Zero‑dependency docs UI (CSP‑safe): /api/docs serves HTML, /api/docs.js serves JS
  */
-const redocHtml = `<!doctype html>
+const docsHtml = `<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta http-equiv="x-ua-compatible" content="ie=edge"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lexvion GPT Stack — API Docs</title>
-  <link rel="icon" href="data:,">
-  <style>
-    html,body { height:100%; margin:0; }
-    body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
-    redoc { height: 100vh; }
-  </style>
 </head>
 <body>
-  <redoc spec-url="/api/openapi.json"></redoc>
-  <script src="https://cdn.jsdelivr.net/npm/redoc@2.1.4/bundles/redoc.standalone.js" crossorigin="anonymous"></script>
+  <h1>Lexvion GPT Stack — API Docs</h1>
+  <div id="meta"></div>
+  <div id="paths"></div>
+  <script src="/api/docs.js"></script>
 </body>
 </html>`;
+const docsJs = `(()=>{"use strict";
+async function main(){
+  const meta=document.getElementById("meta");
+  const root=document.getElementById("paths");
+  try{
+    const r=await fetch("/api/openapi.json",{cache:"no-store"});
+    const spec=await r.json();
+    const server=(spec.servers&&spec.servers[0]&&spec.servers[0].url)||"";
+    meta.textContent=\`\${spec.info?.title||"API"} v\${spec.info?.version||""} — server: \${server}\`;
+    const paths=spec.paths||{};
+    const keys=Object.keys(paths).filter(k=>k.startsWith("/api/")).sort();
+    const seen=new Set();
+    for(const k of keys){
+      if(seen.has(k)) continue; seen.add(k);
+      const ops=paths[k]||{};
+      const wrap=document.createElement("div");
+      const h=document.createElement("h3"); h.textContent=k; wrap.appendChild(h);
+      if(ops.get){
+        const btn=document.createElement("button"); btn.textContent="GET — Try";
+        const out=document.createElement("pre");
+        btn.onclick=async()=>{ out.textContent="…"; try{ const resp=await fetch(k,{cache:"no-store"}); const text=await resp.text(); out.textContent=\`\${resp.status} \${resp.statusText}\\n\${text}\`; }catch(e){ out.textContent=String(e);} };
+        wrap.appendChild(btn); wrap.appendChild(out);
+      } else {
+        const p=document.createElement("p"); p.textContent="Non‑GET methods defined."; wrap.appendChild(p);
+      }
+      root.appendChild(wrap);
+    }
+  }catch(e){ meta.textContent="Failed to load spec: "+e; }
+}
+main();
+})();`;
 
 router.get("/docs", (_req, res) => {
   res.set("Cache-Control", "no-store");
-  res.type("html").send(redocHtml);
+  res.type("html").send(docsHtml);
+});
+
+router.get("/docs.js", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.type("application/javascript").send(docsJs);
 });
 
 export default router;
 // ============================== END routes.js =============================
-
