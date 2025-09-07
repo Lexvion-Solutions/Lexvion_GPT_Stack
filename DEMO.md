@@ -1,6 +1,6 @@
 # Demo Runbook — Lexvion GPT Stack
 #demo link
-https://www.loom.com/share/7fb9d2e36ba04cd499a0b07394e3ba8b?sid=d42e33c6-e94c-4d54-8053-47ba3e7b573e
+https://www.loom.com/share/b60dea045f074dc8a551766df9e8f6a1?sid=9975c7b9-93ca-4761-b308-2ee47bd5d834
 
 **Goal:** 3–4 minute live demo proving production readiness across API, integrations, Slack, API docs, and error handling.
 
