@@ -144,8 +144,8 @@ router.get("/test/sentry", (_req, _res, next) => {
 
 /**
  * OpenAPI schema
- * CI requires servers[0].url to END with /api.
- * Therefore servers.url ends with /api and PATHS OMIT the /api prefix.
+ * CI requires servers[0].url to end with /api AND expects /api/* paths.
+ * To keep Try-It working, we include both unprefixed and /api/* path entries.
  */
 const serverBase =
   process.env.OPENAPI_BASE_URL ||
@@ -153,139 +153,153 @@ const serverBase =
 
 const serverUrl = `${serverBase.replace(/\/$/, "")}/api`;
 
+// Canonical operations (without /api prefix)
+const basePaths = {
+  "/health": {
+    get: {
+      operationId: "getHealth",
+      summary: "Health check",
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: { type: "object", properties: { ok: { type: "boolean" } } },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/check/supabase": {
+    get: {
+      operationId: "checkSupabase",
+      summary: "Supabase configuration check",
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: { type: "object", properties: { configured: { type: "boolean" } } },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/check/notion": {
+    get: {
+      operationId: "checkNotion",
+      summary: "Notion configuration check",
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: { type: "object", properties: { configured: { type: "boolean" } } },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/check/airtable": {
+    get: {
+      operationId: "checkAirtable",
+      summary: "Airtable configuration check",
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: { type: "object", properties: { configured: { type: "boolean" } } },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/check/sendgrid": {
+    get: {
+      operationId: "checkSendgrid",
+      summary: "SendGrid configuration check",
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: { type: "object", properties: { configured: { type: "boolean" } } },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/check/sentry": {
+    get: {
+      operationId: "checkSentry",
+      summary: "Sentry configuration check",
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: { type: "object", properties: { configured: { type: "boolean" } } },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/check/slack": {
+    get: {
+      operationId: "checkSlack",
+      summary: "Slack configuration check",
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: { type: "object", properties: { configured: { type: "boolean" } } },
+            },
+          },
+        },
+      },
+    },
+  },
+  "/check/gsheets": {
+    get: {
+      operationId: "checkGsheets",
+      summary: "Google Sheets configuration check",
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: { type: "object", properties: { configured: { type: "boolean" } } },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 const openapi = {
   openapi: "3.1.0",
   info: { title: "Lexvion GPT Stack API", version: "1.0.0" },
   servers: [{ url: serverUrl }],
+  // Include BOTH unprefixed paths (for correct base) and /api/* paths (for CI script expectations)
   paths: {
-    "/health": {
-      get: {
-        operationId: "getHealth",
-        summary: "Health check",
-        responses: {
-          "200": {
-            description: "OK",
-            content: {
-              "application/json": {
-                schema: { type: "object", properties: { ok: { type: "boolean" } } },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/check/supabase": {
-      get: {
-        operationId: "checkSupabase",
-        summary: "Supabase configuration check",
-        responses: {
-          "200": {
-            description: "OK",
-            content: {
-              "application/json": {
-                schema: { type: "object", properties: { configured: { type: "boolean" } } },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/check/notion": {
-      get: {
-        operationId: "checkNotion",
-        summary: "Notion configuration check",
-        responses: {
-          "200": {
-            description: "OK",
-            content: {
-              "application/json": {
-                schema: { type: "object", properties: { configured: { type: "boolean" } } },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/check/airtable": {
-      get: {
-        operationId: "checkAirtable",
-        summary: "Airtable configuration check",
-        responses: {
-          "200": {
-            description: "OK",
-            content: {
-              "application/json": {
-                schema: { type: "object", properties: { configured: { type: "boolean" } } },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/check/sendgrid": {
-      get: {
-        operationId: "checkSendgrid",
-        summary: "Sendgrid configuration check",
-        responses: {
-          "200": {
-            description: "OK",
-            content: {
-              "application/json": {
-                schema: { type: "object", properties: { configured: { type: "boolean" } } },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/check/sentry": {
-      get: {
-        operationId: "checkSentry",
-        summary: "Sentry configuration check",
-        responses: {
-          "200": {
-            description: "OK",
-            content: {
-              "application/json": {
-                schema: { type: "object", properties: { configured: { type: "boolean" } } },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/check/slack": {
-      get: {
-        operationId: "checkSlack",
-        summary: "Slack configuration check",
-        responses: {
-          "200": {
-            description: "OK",
-            content: {
-              "application/json": {
-                schema: { type: "object", properties: { configured: { type: "boolean" } } },
-              },
-            },
-          },
-        },
-      },
-    },
-    "/check/gsheets": {
-      get: {
-        operationId: "checkGsheets",
-        summary: "Google Sheets configuration check",
-        responses: {
-          "200": {
-            description: "OK",
-            content: {
-              "application/json": {
-                schema: { type: "object", properties: { configured: { type: "boolean" } } },
-              },
-            },
-          },
-        },
-      },
-    },
+    ...basePaths,
+    "/api/health": basePaths["/health"],
+    "/api/check/supabase": basePaths["/check/supabase"],
+    "/api/check/notion": basePaths["/check/notion"],
+    "/api/check/airtable": basePaths["/check/airtable"],
+    "/api/check/sendgrid": basePaths["/check/sendgrid"],
+    "/api/check/sentry": basePaths["/check/sentry"],
+    "/api/check/slack": basePaths["/check/slack"],
+    "/api/check/gsheets": basePaths["/check/gsheets"],
   },
 };
 
@@ -323,4 +337,5 @@ router.get("/docs", (_req, res) => {
 });
 
 export default router;
-// ============================== END routes.js ==============================
+// ============================== END routes.js =============================
+
